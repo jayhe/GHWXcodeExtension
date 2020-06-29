@@ -21,7 +21,7 @@ static NSString *const kUIImageView =  @"UIImageView";
 static NSString *const kImplementation = @"@implementation";
 static NSString *const kInterface = @"@interface";
 static NSString *const kEnd = @"@end";
-static NSString *const kGetterSetterPragmaMark = @"#pragma mark - Setter / Getter";
+static NSString *const kGetterSetterPragmaMark = @"#pragma mark - Getter && Setter";
 
 
 /*******************************  addComment  ******************************************/
@@ -32,11 +32,11 @@ static NSString * const kAddCommentFooterNoParamsExtensionCode = @" *  @return r
 
 /******************************* initView ******************************************/
 static NSString * const kInitViewExtensionCode = @"@interface %@ ()\n\n\n\n@end\n";
-static NSString * const kInitViewLifeCycleCode = @"\n- (instancetype)initWithFrame:(CGRect)frame {\n    self = [super initWithFrame:frame];\n    if (self) {\n        [self configViews];\n    }\n    return self;\n}\n\n- (void)configViews {\n\n}\n\n#pragma mark - Public Methods\n\n#pragma mark - Private Methods\n\n#pragma mark - Setter / Getter";
+static NSString * const kInitViewLifeCycleCode = @"\n- (instancetype)initWithFrame:(CGRect)frame {\n    self = [super initWithFrame:frame];\n    if (self) {\n        [self loadSubviews];\n    }\n    return self;\n}\n\n- (void)loadSubviews {\n\n}\n\n#pragma mark - Public Methods\n\n#pragma mark - Private Methods\n\n#pragma mark - Getter && Setter";
 
-static NSString * const kInitTableViewCellLifeCycleCode = @"\n- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {\n    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];\n    if (self) {\n        [self configViews];\n    }\n    return self;\n}\n\n- (void)configViews {\n    self.selectionStyle = UITableViewCellSelectionStyleNone;\n}\n\n- (void)configWithData {\n\n\n}";
+static NSString * const kInitTableViewCellLifeCycleCode = @"\n- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {\n    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];\n    if (self) {\n        [self loadSubviews];\n    }\n    return self;\n}\n\n- (void)loadSubviews {\n    self.selectionStyle = UITableViewCellSelectionStyleNone;\n}\n\n- (void)fillData:(id)data {\n\n\n}";
 
-static NSString * const kInitViewControllerLifeCycleCode = @"\n#pragma mark - Life Cycle\n\n- (void)viewDidLoad {\n    [super viewDidLoad];\n    [self configViews];\n    [self configData];\n}\n\n- (void)viewWillAppear:(BOOL)animated {\n    [super viewWillAppear:animated];\n\n}\n\n#pragma mark - Setup View / Data\n\n- (void)configViews {\n\n}\n\n- (void)configData {\n\n}\n\n#pragma mark - Observer\n\n#pragma mark - Notification\n\n#pragma mark - Event Response\n\n#pragma mark - Override Methods\n\n#pragma mark - Delegate\n\n#pragma mark - Public Methods\n\n#pragma mark - Private Methods\n\n#pragma mark - Setter / Getter\n\n#pragma mark - Network";
+static NSString * const kInitViewControllerLifeCycleCode = @"\n#pragma mark - Life Cycle\n\n- (void)viewDidLoad {\n    [super viewDidLoad];\n    [self setupUI];\n    [self configData];\n}\n\n- (void)viewWillAppear:(BOOL)animated {\n    [super viewWillAppear:animated];\n\n}\n\n#pragma mark - Public Methods\n\n#pragma mark - Setup View / Data\n\n- (void)setupUI {\n\n}\n\n- (void)configData {\n\n}\n\n#pragma mark - Observer\n\n#pragma mark - Notification\n\n#pragma mark - Action\n\n#pragma mark - Override Methods\n\n#pragma mark - Delegate\n\n#pragma mark - Private Methods\n\n#pragma mark - Network \n\n#pragma mark - Getter && Setter";
 
 /*******************************  addlazyCode  ******************************************/
 //自定义内容格式
