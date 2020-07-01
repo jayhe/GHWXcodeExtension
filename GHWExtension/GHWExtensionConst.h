@@ -36,6 +36,8 @@ static NSString * const kInitViewLifeCycleCode = @"\n- (instancetype)initWithFra
 
 static NSString * const kInitTableViewCellLifeCycleCode = @"\n- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {\n    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];\n    if (self) {\n        [self loadSubviews];\n    }\n    return self;\n}\n\n- (void)loadSubviews {\n    self.selectionStyle = UITableViewCellSelectionStyleNone;\n}\n\n- (void)fillData:(id)data {\n\n\n}";
 
+static NSString * const kInitTableViewHeaderFooterViewLifeCycleCode = @"\n- (instancetype)initWithReuseIdentifier:(nullable NSString *)reuseIdentifier {\n    self = [super initWithReuseIdentifier:reuseIdentifier];\n    if (self) {\n        [self loadSubviews];\n    }\n    return self;\n}\n\n- (void)loadSubviews {\n}\n\n- (void)fillData:(id)data {\n\n\n}";
+
 static NSString * const kInitViewControllerLifeCycleCode = @"\n#pragma mark - Life Cycle\n\n- (void)viewDidLoad {\n    [super viewDidLoad];\n    [self setupUI];\n    [self configData];\n}\n\n- (void)viewWillAppear:(BOOL)animated {\n    [super viewWillAppear:animated];\n\n}\n\n#pragma mark - Public Methods\n\n#pragma mark - Setup View / Data\n\n- (void)setupUI {\n\n}\n\n- (void)configData {\n\n}\n\n#pragma mark - Observer\n\n#pragma mark - Notification\n\n#pragma mark - Action\n\n#pragma mark - Override Methods\n\n#pragma mark - Delegate\n\n#pragma mark - Private Methods\n\n#pragma mark - Network \n\n#pragma mark - Getter && Setter";
 
 /*******************************  addlazyCode  ******************************************/

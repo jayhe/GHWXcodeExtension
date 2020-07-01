@@ -43,7 +43,7 @@
         [[className lowercaseString] hasSuffix:@"collectioncell"] ||
         [[className lowercaseString] hasSuffix:@"collectionviewcell"]) {
         // 添加 Life Cycle 代码
-        if ([invocation.buffer.lines indexOfFirstItemContainStr:@"- (instancetype)initWithFrame"] == NSNotFound) {
+        if ([invocation.buffer.lines indexOfFirstItemContainStr:@"(instancetype)initWithFrame"] == NSNotFound) {
             [self deleteCodeWithInvocation:invocation];
             NSInteger lifeCycleIndex = [invocation.buffer.lines indexOfFirstItemContainStr:kImplementation];
             if (lifeCycleIndex != NSNotFound) {
@@ -80,8 +80,18 @@
                 [invocation.buffer.lines insertItemsOfArray:lifeCycleContentArray fromIndex:lifeCycleIndex];
             }
         }
+    } else if ([[className lowercaseString] hasSuffix:@"headerview"] ||
+               [[className lowercaseString] hasSuffix:@"footerview"]) {
+        if ([invocation.buffer.lines indexOfFirstItemContainStr:@"(instancetype)initWithReuseIdentifier:"] == NSNotFound) {
+            [self deleteCodeWithInvocation:invocation];
+            NSInteger lifeCycleIndex = [invocation.buffer.lines indexOfFirstItemContainStr:kImplementation];
+            if (lifeCycleIndex != NSNotFound) {
+                NSInteger insertIndex = lifeCycleIndex + 1;
+                NSArray *lifeCycleContentArray = [kInitTableViewHeaderFooterViewLifeCycleCode componentsSeparatedByString:@"\n"];
+                [invocation.buffer.lines insertItemsOfArray:lifeCycleContentArray fromIndex:insertIndex];
+            }
+        }
     }
-
 }
 
 - (void)deleteCodeWithInvocation:(XCSourceEditorCommandInvocation *)invocation {
