@@ -81,7 +81,8 @@
             }
         }
     } else if ([[className lowercaseString] hasSuffix:@"headerview"] ||
-               [[className lowercaseString] hasSuffix:@"footerview"]) {
+               [[className lowercaseString] hasSuffix:@"footerview"] ||
+               [[className lowercaseString] hasSuffix:@"headerfooterview"]) {
         if ([invocation.buffer.lines indexOfFirstItemContainStr:@"(instancetype)initWithReuseIdentifier:"] == NSNotFound) {
             [self deleteCodeWithInvocation:invocation];
             NSInteger lifeCycleIndex = [invocation.buffer.lines indexOfFirstItemContainStr:kImplementation];

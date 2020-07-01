@@ -294,6 +294,8 @@
         str = [NSString stringWithFormat:kLazyButtonCode, className, propertyName, propertyName, propertyName, className, propertyName, propertyName, propertyName, propertyName, propertyName];
     } else if ([className containsString:kUILabel]) {
         str = [NSString stringWithFormat:kLazyLabelCode, className, propertyName, propertyName, propertyName, className, propertyName, propertyName, propertyName, propertyName, propertyName];
+    }  else if ([className containsString:kYYLabel]) {
+        str = [NSString stringWithFormat:kLazyYYLabelCode, className, propertyName, propertyName, propertyName, className, propertyName, propertyName, propertyName, propertyName, propertyName];
     } else if ([className containsString:kUIScrollView]) {
         str = [NSString stringWithFormat:kLazyScrollViewCode, className, propertyName, propertyName, propertyName, className, propertyName, propertyName, propertyName, propertyName];
     } else if ([className containsString:kUITableView]) {
@@ -302,6 +304,12 @@
         str = [NSString stringWithFormat:kLazyUICollectionViewCode, className, propertyName, propertyName, propertyName, className, propertyName, propertyName, propertyName, propertyName];
     }  else if ([className containsString:kUIImageView]) {
         str = [NSString stringWithFormat:kLazyImageViewCode, className, propertyName, propertyName, propertyName, className, propertyName, propertyName, propertyName];
+    } else if ([className containsString:kUIView]) {
+        str = [NSString stringWithFormat:kLazyUIViewCode, className, propertyName, propertyName, propertyName, className, propertyName, propertyName];
+    } else if ([className containsString:kUITextField]) {
+        str = [NSString stringWithFormat:kLazyUITextFieldCode, className, propertyName, propertyName, propertyName, className, propertyName, propertyName, propertyName, propertyName, propertyName, propertyName, propertyName];
+    } else if ([className containsString:kUITextView]) {
+        str = [NSString stringWithFormat:kLazyUITextViewCode, className, propertyName, propertyName, propertyName, className, propertyName, propertyName, propertyName, propertyName, propertyName, propertyName, propertyName, propertyName];
     } else {
         str = [NSString stringWithFormat:kLazyCommonCode,className,propertyName,propertyName,propertyName,className,propertyName];
     }

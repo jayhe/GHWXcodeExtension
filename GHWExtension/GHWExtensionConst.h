@@ -12,8 +12,12 @@
 
 /*************************************************************************/
 
+static NSString *const kUIView =  @"UIView";
 static NSString *const kUIButton =  @"UIButton";
 static NSString *const kUILabel =  @"UILabel";
+static NSString *const kYYLabel =  @"YYLabel";
+static NSString *const kUITextField =  @"UITextField";
+static NSString *const kUITextView =  @"UITextView";
 static NSString *const kUIScrollView =  @"UIScrollView";
 static NSString *const kUITableView =  @"UITableView";
 static NSString *const kUICollectionView =  @"UICollectionView";
@@ -56,10 +60,13 @@ static NSString * const kAddLazyCodeUIScrollViewDelegate = @"#pragma mark - UISc
 
 static NSString *const kLazyCommonCode = @"\n- (%@ *)%@ {\n    if (!_%@) {\n        _%@ = [[%@ alloc] init];\n    }\n    return _%@;\n}";
 
+static NSString * const kLazyUIViewCode = @"- (%@ *)%@ {\n    if (!_%@) {\n        _%@ = [[%@ alloc] initWithFrame:CGRectZero];\n        _%@.backgroundColor = [UIColor whiteColor];\n    }\n    return _%@;\n}";
 
 static NSString * const kLazyImageViewCode = @"- (%@ *)%@ {\n    if (!_%@) {\n        _%@ = [[%@ alloc] initWithImage:nil];\n        _%@.contentMode = UIViewContentModeScaleAspectFill;\n        _%@.clipsToBounds = YES;\n    }\n    return _%@;\n}";
 
 static NSString *const kLazyLabelCode = @"- (%@ *)%@ {\n    if (!_%@) {\n        _%@ = [[%@ alloc] initWithFrame:CGRectZero];\n        _%@.textAlignment = NSTextAlignmentLeft;\n        _%@.textColor = [UIColor blackColor];\n        _%@.font = [UIFont systemFontOfSize:18];\n        _%@.text = @\"test\";\n    }\n    return  _%@;\n}";
+
+static NSString *const kLazyYYLabelCode = @"- (%@ *)%@ {\n    if (!_%@) {\n        _%@ = [[%@ alloc] initWithFrame:CGRectZero];\n        _%@.textAlignment = NSTextAlignmentLeft;\n        _%@.textColor = [UIColor blackColor];\n        _%@.font = [UIFont systemFontOfSize:18];\n        _%@.text = @\"test\";\n    }\n    return  _%@;\n}";
 
 static NSString *const kLazyButtonCode = @"- (%@ *)%@ {\n    if (!_%@) {\n        _%@ = [%@ buttonWithType:UIButtonTypeCustom];\n        [_%@ setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];\n        _%@.titleLabel.font = [UIFont systemFontOfSize:14];\n        [_%@ setTitle:@\"test\" forState:UIControlStateNormal];\n         [_%@ addTarget:self action:@selector(buttonTap:) forControlEvents:UIControlEventTouchUpInside];\n     }\n    return _%@;\n}";
 
@@ -68,3 +75,7 @@ static NSString * const kLazyScrollViewCode = @"- (%@ *)%@ {\n    if (!_%@) {\n 
 static NSString * const kLazyUITableViewCode = @"- (%@ *)%@ {\n    if (!_%@) {\n        _%@ = [[%@ alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];\n        _%@.delegate = self;\n        _%@.dataSource = self;\n        _%@.backgroundColor = [UIColor whiteColor];\n        _%@.separatorStyle = UITableViewCellSeparatorStyleNone;\n        if (@available(iOS 11.0, *)) {\n            _%@.estimatedRowHeight = 0;\n            _%@.estimatedSectionFooterHeight = 0;\n            _%@.estimatedSectionHeaderHeight = 0;\n            _%@.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;\n        }\n        [_%@ registerClass:[UITableViewCell class] forCellReuseIdentifier:@\"UITableViewCell\"];\n    }\n    return _%@;\n}\n";
 
 static NSString * const kLazyUICollectionViewCode = @"- (%@ *)%@ {\n    if (!_%@) {\n        UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];\n        layout.itemSize = CGSizeMake(10, 10);\n        layout.minimumLineSpacing = 0;\n        layout.minimumInteritemSpacing = 0;\n        layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;\n\n        _%@ = [[%@ alloc] initWithFrame:CGRectZero collectionViewLayout:layout];\n        _%@.dataSource = self;\n        _%@.delegate = self;\n        [_%@ registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@\"UICollectionViewCell\"];\n    }\n    return _%@;\n}";
+
+static NSString * const kLazyUITextFieldCode = @"- (%@ *)%@ {\n    if (!_%@) {\n        _%@ = [[%@ alloc] init];\n        _%@.borderStyle = UITextBorderStyleNone;\n        _%@.clearButtonMode = UITextFieldViewModeWhileEditing;\n        _%@.returnKeyType = UIReturnKeySearch;\n        _%@.font = [UIFont systemFontOfSize:14];\n        _%@.textColor = [UIColor blackColor];\n        _%@.placeholder = @\"test\";\n    }\n    return _%@;\n}";
+
+static NSString * const kLazyUITextViewCode = @"- (%@ *)%@ {\n    if (_%@ == nil) {\n        _%@ = [[%@ alloc] init];\n        _%@.backgroundColor = [UIColor whiteColor];\n        _%@.textColor = [UIColor blackColor];\n        _%@.font = [UIFont systemFontOfSize:14];\n        _%@.textContainerInset = UIEdgeInsetsMake(9, 9, 9, 9);\n        _%@.layer.cornerRadius = 6;\n        _%@.clipsToBounds = YES;\n        _%@.delegate = self;\n    }\n    return _%@;\n}";
