@@ -68,7 +68,7 @@ static NSString *const kLazyLabelCode = @"- (%@ *)%@ {\n    if (!_%@) {\n       
 
 static NSString *const kLazyYYLabelCode = @"- (%@ *)%@ {\n    if (!_%@) {\n        _%@ = [[%@ alloc] initWithFrame:CGRectZero];\n        _%@.textAlignment = NSTextAlignmentLeft;\n        _%@.textColor = [UIColor blackColor];\n        _%@.font = [UIFont systemFontOfSize:18];\n        _%@.text = @\"test\";\n    }\n    return  _%@;\n}";
 
-static NSString *const kLazyButtonCode = @"- (%@ *)%@ {\n    if (!_%@) {\n        _%@ = [%@ buttonWithType:UIButtonTypeCustom];\n        [_%@ setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];\n        _%@.titleLabel.font = [UIFont systemFontOfSize:14];\n        [_%@ setTitle:@\"test\" forState:UIControlStateNormal];\n         [_%@ addTarget:self action:@selector(buttonTap:) forControlEvents:UIControlEventTouchUpInside];\n     }\n    return _%@;\n}";
+static NSString *const kLazyButtonCode = @"- (%@ *)%@ {\n    if (!_%@) {\n        _%@ = [%@ buttonWithType:UIButtonTypeCustom];\n        [_%@ setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];\n        _%@.titleLabel.font = [UIFont systemFontOfSize:14];\n        [_%@ setTitle:@\"test\" forState:UIControlStateNormal];\n        [_%@ addTarget:self action:@selector(buttonTap:) forControlEvents:UIControlEventTouchUpInside];\n    }\n    return _%@;\n}";
 
 static NSString * const kLazyScrollViewCode = @"- (%@ *)%@ {\n    if (!_%@) {\n        _%@ = [[%@ alloc] init];\n        _%@.alwaysBounceVertical = YES;\n        _%@.backgroundColor = [UIColor lightGrayColor];\n        _%@.delegate = self;\n    }\n    return _%@;\n}\n";
 
