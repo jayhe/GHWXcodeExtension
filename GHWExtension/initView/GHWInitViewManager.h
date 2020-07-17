@@ -9,6 +9,8 @@
 #import <XcodeKit/XcodeKit.h>
 NS_ASSUME_NONNULL_BEGIN
 
+/// 给某个类添加生命周期的默认方法
+/// @discussion 会根据类的初始化方法的不同，去归类添加代码片段
 @interface GHWInitViewManager : NSObject
 
 + (GHWInitViewManager *)sharedInstane;

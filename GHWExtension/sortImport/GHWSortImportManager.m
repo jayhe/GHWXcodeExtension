@@ -11,18 +11,17 @@
 
 @interface GHWSortImportManager ()
 
-@property (nonatomic, strong) NSString *classNameImportStr;
-
-@property (nonatomic, strong) NSMutableArray *controllerArray;
-@property (nonatomic, strong) NSMutableArray *viewsArray;
-@property (nonatomic, strong) NSMutableArray *managerArray;
-@property (nonatomic, strong) NSMutableArray *thirdLibArray;
-@property (nonatomic, strong) NSMutableArray *modelArray;
-@property (nonatomic, strong) NSMutableArray *categoryArray;
-@property (nonatomic, strong) NSMutableArray *otherArray;
+@property (nonatomic, strong) NSString *classNameImportStr; // 本类的.h引入
+@property (nonatomic, strong) NSMutableArray *controllerArray; // 引入的vc的数组
+@property (nonatomic, strong) NSMutableArray *viewsArray; // 引入的view的数组
+@property (nonatomic, strong) NSMutableArray *managerArray; // 引入的manager的数组
+@property (nonatomic, strong) NSMutableArray *thirdLibArray; // 引入的三方库的数组
+@property (nonatomic, strong) NSMutableArray *modelArray; // 引入的模型的数组
+@property (nonatomic, strong) NSMutableArray *categoryArray; // 引入的分类的数组
+@property (nonatomic, strong) NSMutableArray *otherArray; // 其他
 @property (nonatomic, strong) NSMutableIndexSet *indexSet;
+@property (nonatomic, assign) BOOL hasSelectedImportLines; // 是否有选择import的行标记位
 
-@property (nonatomic, assign) BOOL hasSelectedImportLines;
 @end
 
 @implementation GHWSortImportManager
@@ -50,39 +49,38 @@
     
     NSInteger endIndex = 0;
     NSInteger startIndex = 0;
-    if ([invocation.buffer.selections count] == 0) {
-        startIndex = [self indexOfFirstInsertLineOfArray:invocation.buffer.lines];
+    if ([invocation.buffer.selections count] == 0) { // 没有选中
+        startIndex = [self indexOfFirstInsertLineOfArray:invocation.buffer.lines]; // 过滤掉类的.m的头部描述信息
         endIndex = [invocation.buffer.lines count] - 1;
         self.hasSelectedImportLines = NO;
-    } else {
+    } else { // 有选中区域
         XCSourceTextRange *selectRange = invocation.buffer.selections[0];
         startIndex = selectRange.start.line;
         endIndex = selectRange.end.line;
         
-        if (startIndex == endIndex) {
+        if (startIndex == endIndex) { // 选中了单行，则整理排序的范围是从该行到文件尾
             startIndex = [self indexOfFirstInsertLineOfArray:invocation.buffer.lines];
             endIndex = [invocation.buffer.lines count] - 1;
             self.hasSelectedImportLines = NO;
-
-        } else {
+        } else { // 选中了多行import的信息
             self.hasSelectedImportLines = YES;
         }
-        
     }
     
-    NSInteger importStartIndex = startIndex < [self indexOfFirstInsertLineOfArray:invocation.buffer.lines] + 1 ? [self indexOfFirstInsertLineOfArray:invocation.buffer.lines] + 1 : startIndex;
+    NSInteger importStartIndex = (startIndex < [self indexOfFirstInsertLineOfArray:invocation.buffer.lines] + 1) ? ([self indexOfFirstInsertLineOfArray:invocation.buffer.lines] + 1) : startIndex; // import的开始index：如果startIndex小于类的.m注释的最大index则设置为注释的下一行，否则就是选中的区域的首行
     NSString *classNameStr = [[invocation.buffer.lines fetchClassName] lowercaseString];
     for (NSInteger i = startIndex; i <= endIndex; i++) {
         NSString *contentStr = [[invocation.buffer.lines[i] deleteSpaceAndNewLine] lowercaseString];
         if (![contentStr hasPrefix:@"#import"]) {
             if ([contentStr length] == 0 && self.hasSelectedImportLines) {
-                [self.indexSet addIndex:i];
+                [self.indexSet addIndex:i]; // 记录选中的区域的空行
             }
             continue;
         }
-        
+        // import的行
+        // 这里设置的import排序规则 view > manager > vc > thirdlib > models > category > other；可以按照自己项目的规范定义这个顺序
         if ([contentStr checkHasContainsOneOfStrs:@[[NSString stringWithFormat:@"%@.h", classNameStr]]
-                          andNotContainsOneOfStrs:@[@"+"]]) {
+                          andNotContainsOneOfStrs:@[@"+"]]) { // 本类的import
             self.classNameImportStr = invocation.buffer.lines[i];
         } else if ([contentStr checkHasContainsOneOfStrs:@[@"view.h\"", @"bar.h\"", @"cell.h\""]
                                  andNotContainsOneOfStrs:@[@"+"]]) {
@@ -105,6 +103,7 @@
             [self.otherArray addObject:invocation.buffer.lines[i]];
         }
     }
+    // 从buffer的lines数组中删除掉归类的行
     [invocation.buffer.lines printList];
     [invocation.buffer.lines removeObjectsAtIndexes:self.indexSet];
     
@@ -131,7 +130,7 @@
     [invocation.buffer.lines printList];
     
     [invocation.buffer.lines removeObjectsInArray:self.otherArray];
-    
+    // 再按照定义的顺序将归好类的import信息插入到buffer的lines中
     if ([self.classNameImportStr length]) {
         NSMutableArray *mArr = [NSMutableArray arrayWithObject:self.classNameImportStr];
         [mArr addObject:@"\n"];
@@ -191,7 +190,7 @@
         importStartIndex = importStartIndex + [self.otherArray count];
         [invocation.buffer.lines printList];
     }
-    
+    // 删除掉空行
     NSMutableIndexSet *spaceDeleteSet = [[NSMutableIndexSet alloc] init];
     for (NSInteger i = importStartIndex; i < [invocation.buffer.lines count]; i++) {
         if ([[invocation.buffer.lines[i] deleteSpaceAndNewLine] length] == 0) {

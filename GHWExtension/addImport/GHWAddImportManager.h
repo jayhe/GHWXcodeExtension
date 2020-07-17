@@ -10,6 +10,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/// 选中某个类，可以快捷导入其头文件
+ 
 @interface GHWAddImportManager : NSObject
 
 + (GHWAddImportManager *)sharedInstane;

@@ -83,24 +83,25 @@
     }
 }
 
-// 注释里面的类名字
+/// 注释里面的类名字
 - (NSString *)fetchReferenceClassName {
     NSString *className = nil;
     NSRange range;
-    NSString *str0 = [self[1] deleteSpaceAndNewLine];
+    NSString *str0 = [self[1] deleteSpaceAndNewLine]; // 例如：//  NSMutableArray+GHWExtension.m ===> //NSMutableArray+GHWExtension.m
     if ([str0 hasPrefix:@"//"] && [str0 hasSuffix:@".m"]) {
         if ([str0 containsString:@"+"]) {
-            range = [str0 rangeOfString:@"+"];
+            range = [str0 rangeOfString:@"+"]; // 如果是分类则取+号前面的部分
         } else {
-            range = [str0 rangeOfString:@"."];
+            range = [str0 rangeOfString:@"."]; // 否则取.号前面的部分
         }
-        className = [str0 substringWithRange:NSMakeRange(2, range.location - 2)];
+        className = [str0 substringWithRange:NSMakeRange(2, range.location - 2)]; // 剔除//就是类名
     }
     return className;
 }
 
 
-// 本文件类名
+/// 本文件类名
+/// @discussion 这里主要是处理当一个文件中写了多个类的声明或者类的实现的场景；通过批对跟类文件注释中的类名来确定该文件的类名
 - (NSString *)fetchClassName {
     NSString *referenceClassName = [self fetchReferenceClassName];
     NSString *className = @"";

@@ -19,7 +19,7 @@
 
 @implementation GHWAddLazyCodeManager
 
-+(GHWAddLazyCodeManager *)sharedInstane{
++ (GHWAddLazyCodeManager *)sharedInstane{
     static dispatch_once_t predicate;
     static GHWAddLazyCodeManager * sharedInstane;
     dispatch_once(&predicate, ^{
@@ -29,11 +29,12 @@
 }
 
 - (void)processCodeWithInvocation:(XCSourceEditorCommandInvocation *)invocation {
-    for (XCSourceTextRange *rang in invocation.buffer.selections) {
+    for (XCSourceTextRange *rang in invocation.buffer.selections) { // 支持多行选中增加懒加载代码片段
         [self initWithFormaterArray:rang invocation:invocation];
     }
 }
--(void)initWithFormaterArray:(XCSourceTextRange *)selectedTextRange invocation:(XCSourceEditorCommandInvocation *)invocation {
+
+- (void)initWithFormaterArray:(XCSourceTextRange *)selectedTextRange invocation:(XCSourceEditorCommandInvocation *)invocation {
     [self.lazyArray removeAllObjects];
     [self.delegateMethodsArray removeAllObjects];
     NSInteger startLine = selectedTextRange.start.line;
@@ -52,9 +53,6 @@
         if (!classNameStr || !propertyNameStr) {
             continue;
         }
-
-        
-        
         // 修改对应属性行, 规范化
         NSString *replaceStr = [NSString stringWithFormat:@"@property (nonatomic, strong) %@ *%@", classNameStr, propertyNameStr];
         if (![contentStr containsString:@"*"]) {
@@ -71,9 +69,8 @@
             continue;
         }
         
-        
-        
-        //懒加载
+
+        // 根据类名及属性名获取懒加载代码片段转化成的数组
         NSArray *lazyGetArray = [self fetchGetterForClassName:classNameStr andPropertyName:propertyNameStr];
         if (lazyGetArray.count > 1) {
             __block NSString *firstStr = lazyGetArray[1];
@@ -83,12 +80,13 @@
                 }
             }];
             
-            NSString *currentClassName = [invocation.buffer.lines fetchCurrentClassNameWithCurrentIndex:startLine];
-            NSInteger impIndex = [invocation.buffer.lines indexOfFirstItemContainStrsArray:@[kImplementation, currentClassName]];
-            NSInteger endIndex = [invocation.buffer.lines indexOfFirstItemContainStr:kEnd fromIndex:impIndex];
+            NSString *currentClassName = [invocation.buffer.lines fetchCurrentClassNameWithCurrentIndex:startLine]; // 获取当前需要插入懒加载代码片段的属性所在的类
+            NSInteger impIndex = [invocation.buffer.lines indexOfFirstItemContainStrsArray:@[kImplementation, currentClassName]]; // 获取@implementation currentClassName 的位置
+            NSInteger endIndex = [invocation.buffer.lines indexOfFirstItemContainStr:kEnd fromIndex:impIndex]; // 获取@end的位置
+            // 查找是否有懒加载属性的getter的首行的index
             NSInteger existIndex = [invocation.buffer.lines indexOfFirstItemContainStr:firstStr fromIndex:impIndex andToIndex:endIndex];
             BOOL alreadyExistLazyMethod = [self alreadyExistsLazyMethodWithClassName:classNameStr andPropertyName:propertyNameStr andInvocation:invocation andStartLine:startLine];
-            if (existIndex == NSNotFound && alreadyExistLazyMethod == NO) {
+            if (existIndex == NSNotFound && alreadyExistLazyMethod == NO) { // 没有实现过懒加载
                 [self.lazyArray addObject:lazyGetArray];
                 // 协议方法
                 NSArray *delegateMethodLinesArray = [self fetchMethodsLinesArrayWithClassName:classNameStr andFromIndex:startLine andInvocation:invocation];
@@ -100,11 +98,12 @@
             }
 
         }
-
-        // 在 <>里面加上 UITableViewDelegate 等
+        // 在 extension的<>里面加上 UITableViewDelegate 等
         [self addDelegateDeclareWithClassName:classNameStr andInvocation:invocation andStartIndex:startLine];
     }
+    // 添加代理的方法
     [self addAllDelegateMethodList:invocation andStartLine:startLine];
+    // 添加懒加载的代码方法
     [self addBufferInsertInvocation:invocation andFromIndex:startLine];
     
     // 修改对应属性行, 规范化
@@ -215,6 +214,11 @@
     return @"";
 }
 
+/// 返回是否需要插入代理的代理方法
+/// @param classNameStr 类名
+/// @param startLine 选中的开始的行
+/// @param invocation Xcode文件编辑器对象
+/// @discussion 这里通过判断buffer中是否有某个协议对应的某个函数的实现来判断是否实现了该协议的方法，从而判断是否需要插入协议方法；如果需要增量插入那么就需要额外的逻辑会复杂一点
 - (NSArray *)fetchMethodsLinesArrayWithClassName:(NSString *)classNameStr andFromIndex:(NSInteger)startLine andInvocation:(XCSourceEditorCommandInvocation *)invocation {
     NSString *currentClassName = [invocation.buffer.lines fetchCurrentClassNameWithCurrentIndex:startLine];
     NSInteger impIndex = [invocation.buffer.lines indexOfFirstItemContainStrsArray:@[kImplementation, currentClassName]];
@@ -287,8 +291,9 @@
     }
 }
 
-//懒加载
-- (NSArray *)fetchGetterForClassName:(NSString *)className andPropertyName:(NSString *)propertyName{
+/// 根据类名来获取懒加载代码片段，并将代码片段以\n分割为数组
+/// @discussion 针对自己项目中的类的懒加载代码可以增加对应的代码片段；可以直接拷贝已有的代码然后将换行的地方替换成"\n"，将类名，getter替换成"%@"，将实例变量替换成"_%@"
+- (NSArray *)fetchGetterForClassName:(NSString *)className andPropertyName:(NSString *)propertyName {
     NSString *str = @"";
     if ([className containsString:kUIButton]) {
         str = [NSString stringWithFormat:kLazyButtonCode, className, propertyName, propertyName, propertyName, className, propertyName, propertyName, propertyName, propertyName, propertyName];
